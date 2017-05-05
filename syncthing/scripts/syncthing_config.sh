@@ -20,7 +20,7 @@ get_ipaddr(){
     else
         ipaddr="$lan_ip:$syncthing_port"
     fi
-    sed -i "s/<address>[0-9.]\{7,15\}:[0-9]\{2,5\}<\/address>/<address>$ipaddr<\/address>/g" $conf_Path/config.xml
+    sed -i "/<gui enabled/{n;s/[0-9.]\{7,15\}:[0-9]\{2,5\}/$ipaddr/g}" $conf_Path/config.xml
 }
 start_syncthing(){
     $KSROOT/syncthing/syncthing -home $conf_Path >>/tmp/syncthing.log &

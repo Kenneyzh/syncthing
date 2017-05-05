@@ -14,7 +14,6 @@ create_conf(){
 }
 lan_ip=`nvram get lan_ipaddr`
 weburl="http://$lan_ip:$syncthing_port"
-dbus set syncthing_webui=$weburl
 get_ipaddr(){
     if [ $syncthing_wan_enable == 1 ];then
         ipaddr="0.0.0.0:$syncthing_port"
@@ -25,22 +24,25 @@ get_ipaddr(){
 }
 start_syncthing(){
     $KSROOT/syncthing/syncthing -home $conf_Path >>/tmp/syncthing.log &
-    sleep 5
+    sleep 10
     #cru d syncthing
     #cru a syncthing "*/10 * * * * sh $KSROOT/scripts/syncthing_config.sh"
+    dbus set syncthing_webui=$weburl
     if [ -L "$KSROOT/init.d/S94syncthing.sh" ];then 
         rm -rf $KSROOT/init.d/S94syncthing.sh
     fi
     ln -sf $KSROOT/scripts/syncthing_config.sh $KSROOT/init.d/S94syncthing.sh
 }
 stop_syncthing(){
-    for i in `ps |grep syncthing|grep -v grep|grep -v sh|awk -F' ' '{print $1}'`;do
+    for i in `ps |grep syncthing|grep -v grep|grep -v "/bin/sh"|awk -F' ' '{print $1}'`;do
         kill $i
     done
+    sleep 2
     #cru d syncthing
     if [ -L "$KSROOT/init.d/S94syncthing.sh" ];then 
         rm -rf $KSROOT/init.d/S94syncthing.sh
     fi
+    dbus set syncthing_webui="--"
 }
 
 case $ACTION in
@@ -56,7 +58,7 @@ stop)
 	;;
 *)
     if [ "$syncthing_enable" = "1" ]; then
-        if [ "`ps|grep syncthing|grep -v sh|grep -v grep|wc -l`" != "0" ];then 
+        if [ "`ps|grep syncthing|grep -v "/bin/sh"|grep -v grep|wc -l`" != "0" ];then 
             stop_syncthing
         fi
         create_conf

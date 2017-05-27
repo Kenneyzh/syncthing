@@ -15,7 +15,9 @@ var appsInfo;
 	  	}
 	});
 }
-
+if (Apps.syncthing_webui == undefined||syncthing_webui == null){
+		Apps.syncthing_webui = '--';
+	}
 //console.log('Apps',Apps);
 //数据 -  绘制界面用 - 直接 声明一个 Apps 然后 post 到 sh 然后 由 sh 执行 存到 dbus
 function verifyFields(focused, quiet){

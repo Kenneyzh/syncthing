@@ -6,6 +6,7 @@ export KSROOT=/jffs/koolshare
 source $KSROOT/scripts/base.sh
 eval `dbus export syncthing_`
 conf_Path="$KSROOT/syncthing/config"
+export HOME=/root
 
 create_conf(){
     if [ ! -d $conf_Path ];then
@@ -23,7 +24,7 @@ get_ipaddr(){
     sed -i "/<gui enabled/{n;s/[0-9.]\{7,15\}:[0-9]\{2,5\}/$ipaddr/g}" $conf_Path/config.xml
 }
 start_syncthing(){
-    $KSROOT/syncthing/syncthing -home $conf_Path >>/tmp/syncthing.log &
+    $KSROOT/syncthing/syncthing -home="$conf_Path" >>/tmp/syncthing.log &
     sleep 10
     #cru d syncthing
     #cru a syncthing "*/10 * * * * sh $KSROOT/scripts/syncthing_config.sh"
